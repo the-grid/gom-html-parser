@@ -120,6 +120,10 @@ describe 'HTML-to-JSON', ->
             Hello <a href="https://thegrid.io">world <span class="name big">I am here </span>!</a>...
           """
 
+          """
+            <!-- <ignore> this! --> Hello <a href="https://thegrid.io">world <!-- <ignore> this! --><span class="name big"><!-- <ignore> this! -->I am here </span>!</a>...<!-- <ignore> this! -->
+          """
+
         ],
 
         [

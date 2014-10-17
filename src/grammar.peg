@@ -40,7 +40,7 @@ Tags
 
 Tag
   = EmptyTag
-  / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" content:TagContent TagClose {
+  / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" __ content:TagContent TagClose {
     var node = {};
     node.tag = tagName.join('').trim();
     if (attrs) {
@@ -57,7 +57,7 @@ Tag
   }
 
 
-TagClose
+TagClose "TagClose"
   = "</" __ tagCloseName:[^ >]+ __ ">" {return tagCloseName.join('');}
 
 EmptyTag
@@ -76,14 +76,14 @@ EmptyTagNames
 
 
 TagContent
-  = __ c1:NotTagContent c2:(Tag __ [^<]*)+ {
+  = c1:NotTagContent c2:(Tag __ NotTagContent)+ {
     var content = [];
     //c1 = c1.join('');
     if (c1.length > 0) {content.push(c1);}
     var tag, text;
     c2.forEach(function(chain) {
       tag = chain[0];
-      text = chain[2].join('');
+      text = chain[2];
       content.push(tag);
       if (text.length > 0) {content.push(text);}
     })
@@ -97,7 +97,7 @@ TagContent
   }
 
 NotTagContent
-  = s:(Comment? [^<])* {
+  = s:(Comment* [^<])* __ {
     var text = '';
     s.forEach(function(match){
       text += match[1];
@@ -171,8 +171,7 @@ LineTerminatorSequence "end of line"
   / "\u2029" // paragraph separator
 
 EOS
-  = __ ";"
-  / _ LineTerminatorSequence
+  = _ LineTerminatorSequence
   / __ EOF
 
 EOF

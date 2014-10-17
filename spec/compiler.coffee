@@ -82,6 +82,36 @@ describe 'HTML-to-JSON', ->
           }
         ]
 
+    parse "style attribute", [
+
+          "<div style='color:red; background-color:transparent'></div>"
+
+          "< div  style=' color : red ; background-color : transparent ;' ></ div >"
+
+          """
+          <
+          div
+            style="
+            color:red;
+            background-color:transparent;
+            "
+          ></
+          div
+          >
+          """
+
+        ],
+
+        [
+          {
+            tag: 'div'
+            attributes:
+              style:
+                'color': 'red'
+                'background-color': 'transparent'
+          }
+        ]
+
     parse "nested tags", [
 
           "<section><div><div></div></div></section>"

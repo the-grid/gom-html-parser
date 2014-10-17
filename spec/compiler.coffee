@@ -29,22 +29,6 @@ parse = (title, sources, expectation, pending) ->
           expect(result).to.eql expectation
 
 
-equivalent = () -> # ( "title", source0, source1, source2...)
-  sources = [arguments...]
-  title = sources.splice(0,1)[0]
-  results = []
-  describe title + " ok", ->
-    it "sources ok ✓", ->
-      for source, i in sources
-        results.push parser.parse source
-        assert results[results.length-1].commands?, "source #{i} is ok"
-  describe title, ->
-    for source, i in sources
-      if i isnt 0
-        it "source #{i} == source #{i - 1}  ✓", ->
-          expect(results[1]).to.eql results.splice(0,1)[0]
-
-
 # Helper function for expecting errors to be thrown when parsing.
 #
 # @param source [String] CCSS statements.
@@ -90,7 +74,7 @@ describe 'HTML-to-JSON', ->
           >
           """
 
-        ]
+        ],
 
         [
           {
@@ -110,7 +94,7 @@ describe 'HTML-to-JSON', ->
           </section>
           """
 
-        ]
+        ],
 
         [
           {
@@ -127,4 +111,38 @@ describe 'HTML-to-JSON', ->
             ]
           }
         ]
+
+    parse "nested tags with text", [
+
+          """Hello <a href="https://thegrid.io">world <span class="name big">I am here </span>!</a>..."""
+
+          """
+            Hello <a href="https://thegrid.io">world <span class="name big">I am here </span>!</a>...
+          """
+
+        ],
+
+        [
+          "Hello "
+          {
+            tag: 'a'
+            attributes:
+              href: "https://thegrid.io"
+            children: [
+              "world "
+              {
+                tag: 'span'
+                attributes:
+                  class: ['name','big']
+                children: [
+                  "I am here "
+                ]
+              }
+              "!"
+            ]
+          }
+          "..."
+        ]
+
+
 

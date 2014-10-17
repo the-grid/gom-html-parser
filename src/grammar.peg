@@ -28,24 +28,32 @@ Document
   = Tags
 
 Tags
-  = __ text:[^<]* tags:(Tag __)* {
-    text = text.join('')
+  = __ pretext:NotTagContent tags:( Tag __ )* posttext:NotTagContent {
     var val = [];
-    if (text.length > 0) {val.push(text);}
+    if (pretext.length > 0) {val.push(pretext);}
     tags.forEach(function(tag){
       val.push(tag[0]);
     })
+    if (posttext.length > 0) {val.push(posttext);}
     return val;
   }
 
 Tag
   = EmptyTag
   / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" content:TagContent TagClose {
-    attrs.tag = tagName.join('').trim();
-    if (content) {
-      attrs.children = content;
+    var node = {};
+    node.tag = tagName.join('').trim();
+    if (attrs) {
+      node.attributes = attrs;
     }
-    return attrs;
+    if (content) {
+      if (content instanceof Array) {
+        node.children = content;
+      } else {
+        node.children = [content];
+      }
+    }
+    return node;
   }
 
 
@@ -54,8 +62,12 @@ TagClose
 
 EmptyTag
   = "<" &[^/] __ tagName:[^ />]+ attrs:Attributes __ "/>" {
-    attrs.tag = tagName.join('').trim();
-    return attrs;
+    var node = {};
+    node.tag = tagName.join('').trim();
+    if (attrs) {
+      node.attributes = attrs;
+    }
+    return node;
   }
 
 EmptyTagNames
@@ -64,9 +76,9 @@ EmptyTagNames
 
 
 TagContent
-  = __ c1:[^<]* c2:(Tag __ [^<]*)+ {
+  = __ c1:NotTagContent c2:(Tag __ [^<]*)+ {
     var content = [];
-    c1 = c1.join('');
+    //c1 = c1.join('');
     if (c1.length > 0) {content.push(c1);}
     var tag, text;
     c2.forEach(function(chain) {
@@ -78,12 +90,20 @@ TagContent
     if (content.length === 0) {return null;}
     return content;
   }
-  / content:[^<]* {
-    content = content.join('');
-    if (content.length <= 0) {return null;}
-    return content;
+  / text:[^<]* {
+    text = text.join('');
+    if (text.length <= 0) {return null;}
+    return text;
   }
 
+NotTagContent
+  = s:(Comment? [^<])* {
+    var text = '';
+    s.forEach(function(match){
+      text += match[1];
+    })
+    return text;
+  }
 
 Attributes
   = __ chains:(Attribute __)* {
@@ -114,6 +134,8 @@ Attributes
         attrs[key] = val;
       }
     })
+
+    if (Object.keys(attrs).length === 0) {return null;}
     return attrs;
   }
 

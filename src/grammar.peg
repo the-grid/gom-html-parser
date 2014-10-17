@@ -1,0 +1,172 @@
+{
+  var p = this;
+  var g = (function() {
+    var getLineNumber = function() {
+      return line();
+    };
+
+    var getColumnNumber = function() {
+      return column();
+    };
+
+    var getErrorType = function() {
+      return SyntaxError;
+    };
+
+    var Grammar = require('./grammar');
+
+    return new Grammar(p, getLineNumber, getColumnNumber, getErrorType);
+  })();
+
+  // throw new g._Error('Invalid If Clause', null, null, null, g._lineNumber(), g._columnNumber())
+}
+
+start
+  = Document
+
+Document
+  = Tags
+
+Tags
+  = __ text:[^<]* tags:(Tag __)* {
+    text = text.join('')
+    var val = [];
+    if (text.length > 0) {val.push(text);}
+    tags.forEach(function(tag){
+      val.push(tag[0]);
+    })
+    return val;
+  }
+
+Tag
+  = EmptyTag
+  / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" content:TagContent TagClose {
+    attrs.tag = tagName.join('').trim();
+    if (content) {
+      attrs.children = content;
+    }
+    return attrs;
+  }
+
+
+TagClose
+  = "</" __ tagCloseName:[^ >]+ __ ">" {return tagCloseName.join('');}
+
+EmptyTag
+  = "<" &[^/] __ tagName:[^ />]+ attrs:Attributes __ "/>" {
+    attrs.tag = tagName.join('').trim();
+    return attrs;
+  }
+
+EmptyTagNames
+  = 'br'/ 'hr' / 'meta' / 'link' / 'base' / 'meta' / 'img' / 'embed' / 'param' / 'area' / 'col' / 'input'
+  / 'BR'/ 'HR' / 'META' / 'LINK' / 'BASE' / 'META' / 'IMG' / 'EMBED' / 'PARAM' / 'AREA' / 'COL' / 'INPUT'
+
+
+TagContent
+  = __ c1:[^<]* c2:(Tag __ [^<]*)+ {
+    var content = [];
+    c1 = c1.join('');
+    if (c1.length > 0) {content.push(c1);}
+    var tag, text;
+    c2.forEach(function(chain) {
+      tag = chain[0];
+      text = chain[2].join('');
+      content.push(tag);
+      if (text.length > 0) {content.push(text);}
+    })
+    if (content.length === 0) {return null;}
+    return content;
+  }
+  / content:[^<]* {
+    content = content.join('');
+    if (content.length <= 0) {return null;}
+    return content;
+  }
+
+
+Attributes
+  = __ chains:(Attribute __)* {
+    var attrs = {};
+    var key, val;
+    chains.forEach(function(chain){
+      key = chain[0][0];
+      val = chain[0][1];
+      if (key === 'style') {
+        attrs.style = {};
+        val.split(';').forEach(function(s){
+          s = s.split(':');
+          if (s.length === 2) {
+            attrs.style[s[0].trim()] = s[1].trim();
+          }
+        })
+      }
+      else if (key === 'class') {
+        attrs.class = [];
+        val.split(' ').forEach(function(className){
+          className = className.trim();
+          if (className.length > 0) {
+            attrs.class.push(className);
+          }
+        })
+      }
+      else {
+        attrs[key] = val;
+      }
+    })
+    return attrs;
+  }
+
+Attribute
+  = key:[^ =]+ val:AttributeValue {
+    return [key.join(''), val];
+  }
+  / key:[a-zA-Z0-9\-\_]+ {
+    return [key.join(''), true];
+  }
+
+AttributeValue
+  = '="' __ val:[^"]* __ '"' {return val.join('').trim();}
+  / "='" __ val:[^']* __ "'" {return val.join('').trim();}
+  / "=" "false" {return false;}
+  / "=" "true" {return true;}
+
+
+SourceCharacter
+  = .
+
+WhiteSpace "whitespace"
+  = [\t\v\f \u00A0\uFEFF]
+
+LineTerminator
+  = [\n\r\u2028\u2029]
+
+LineTerminatorSequence "end of line"
+  = "\n"
+  / "\r\n"
+  / "\r"
+  / "\u2028" // line separator
+  / "\u2029" // paragraph separator
+
+EOS
+  = __ ";"
+  / _ LineTerminatorSequence
+  / __ EOF
+
+EOF
+  = !.
+
+Comment "comment"
+  = MultiLineComment
+
+MultiLineComment
+  = "<!--" (!"-->" SourceCharacter)* "-->"
+
+MultiLineCommentNoLineTerminator
+  = "<!--" (!("-->" / LineTerminator) SourceCharacter)* "-->"
+
+_
+  = (WhiteSpace / MultiLineCommentNoLineTerminator)*
+
+__
+  = (WhiteSpace / LineTerminatorSequence / Comment)*

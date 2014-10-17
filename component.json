@@ -1,0 +1,20 @@
+{
+  "name": "html2json",
+  "description": "HTML to JSON",
+  "author": "Dan Tocchini <d4@thegrid.io>",
+  "repo": "the-grid/gom-html-parser",
+  "version": "0.0.1",
+  "json": [
+    "component.json"
+  ],
+  "scripts": [
+    "lib/compiler.js",
+    "lib/grammar.js",
+    "lib/parser.js"
+  ],
+  "dependencies": {
+    "gss/error-reporter": "*"
+  },
+  "main": "lib/compiler.js",
+  "license": "MIT"
+}

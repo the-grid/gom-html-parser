@@ -39,7 +39,8 @@ Tags
   }
 
 Tag
-  = EmptyTag
+  = DoctypeTag
+  / EmptyTag
   / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" __ content:TagContent TagClose {
     var node = {};
     node.tag = tagName.join('').trim();
@@ -56,6 +57,8 @@ Tag
     return node;
   }
 
+DoctypeTag
+  = "<!" &[^\-] DOCTYPER:[^>]+ ">" {return "<!" + DOCTYPER.join('') + ">";}
 
 TagClose "TagClose"
   = "</" __ tagCloseName:[^ >]+ __ ">" {return tagCloseName.join('');}
@@ -69,8 +72,16 @@ EmptyTag
     }
     return node;
   }
+  / "<" &[^/] __ tagName:EmptyTagName attrs:Attributes __ ">" {
+    var node = {};
+    node.tag = tagName;
+    if (attrs) {
+      node.attributes = attrs;
+    }
+    return node;
+  }
 
-EmptyTagNames
+EmptyTagName
   = 'br'/ 'hr' / 'meta' / 'link' / 'base' / 'meta' / 'img' / 'embed' / 'param' / 'area' / 'col' / 'input'
   / 'BR'/ 'HR' / 'META' / 'LINK' / 'BASE' / 'META' / 'IMG' / 'EMBED' / 'PARAM' / 'AREA' / 'COL' / 'INPUT'
 

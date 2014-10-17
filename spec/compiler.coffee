@@ -148,5 +148,95 @@ describe 'HTML-to-JSON', ->
           "..."
         ]
 
+    parse "html doc", [
+
+          """
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8"/> <!-- self closing tag -->
+                <title>Online version &raquo; PEG.js &ndash; Parser Generator for JavaScript</title>
+              </head>
+              <body>
+                <h1>Hello World</h1>
+              </body>
+            </html>
+          """,
+
+          """
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <meta charset="utf-8"> <!-- HTML5 empty tag -->
+                <title>Online version &raquo; PEG.js &ndash; Parser Generator for JavaScript</title>
+              </head>
+              <body>
+                <h1>Hello World</h1>
+              </body>
+            </html>
+          """,
+
+          """
+            <!-- ignore -->
+            <!DOCTYPE html>
+            <!-- ignore -->
+            <html>
+              <!-- ignore -->
+              <head>
+                <!-- ignore -->
+                <meta charset="utf-8"/>
+                <!-- ignore -->
+                <title>Online version &raquo; PEG.js &ndash; Parser Generator for JavaScript</title>
+                <!-- ignore -->
+              </head>
+              <!-- ignore -->
+              <body>
+                <!-- ignore -->
+                <h1>Hello World</h1>
+                <!-- ignore -->
+              </body>
+              <!-- ignore -->
+            </html>
+            <!-- ignore -->
+          """
+
+        ],
+
+        [
+          "<!DOCTYPE html>"
+          {
+            tag: 'html'
+            children: [
+              {
+                tag: 'head'
+                children: [
+                  {
+                    tag: 'meta'
+                    attributes:
+                      charset: "utf-8"
+                  }
+                  {
+                    tag: 'title'
+                    children: [
+                      "Online version &raquo; PEG.js &ndash; Parser Generator for JavaScript"
+                    ]
+                  }
+                ]
+              }
+              {
+                tag: 'body'
+                children: [
+                  {
+                    tag: 'h1'
+                    children: [
+                      "Hello World"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+
 
 

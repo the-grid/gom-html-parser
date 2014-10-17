@@ -112,6 +112,35 @@ describe 'HTML-to-JSON', ->
           }
         ]
 
+    parse "class attribute", [
+
+          "<div class='foo bar pug'></div>"
+
+          "< div  class='  foo   bar   pug  ' ></ div >"
+
+          """
+          <
+          div
+            class="
+              foo
+              bar
+              pug
+            "
+          ></
+          div
+          >
+          """
+
+        ],
+
+        [
+          {
+            tag: 'div'
+            attributes:
+              class: ["foo", "bar", "pug"]
+          }
+        ]
+
     parse "nested tags", [
 
           "<section><div><div></div></div></section>"

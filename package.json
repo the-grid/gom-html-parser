@@ -1,7 +1,7 @@
 {
   "name": "gom-html-parser",
-  "description": "Parses HTML to JSON",
-  "version": "0.0.1",
+  "description": "Parsers HTML to GOM flavored JSON",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git://github.com/the-grid/gom-html-parser.git"

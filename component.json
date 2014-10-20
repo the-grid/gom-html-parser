@@ -1,9 +1,9 @@
 {
-  "name": "html2json",
-  "description": "HTML to JSON",
+  "name": "gom-html-parser",
+  "description": "Parsers HTML to GOM flavored JSON",
   "author": "Dan Tocchini <d4@thegrid.io>",
   "repo": "the-grid/gom-html-parser",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "json": [
     "component.json"
   ],

@@ -104,5 +104,6 @@ For more, see the spec.
 
 ## Build & Test
 
+`npm install`
 `grunt test`
 

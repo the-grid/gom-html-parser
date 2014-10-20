@@ -19,6 +19,7 @@
   })();
 
   // throw new g._Error('Invalid If Clause', null, null, null, g._lineNumber(), g._columnNumber())
+
 }
 
 start
@@ -41,9 +42,11 @@ Tags
 Tag
   = DoctypeTag
   / EmptyTag
-  / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" __ content:TagContent TagClose {
+  / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" __ content:TagContent closeTagName:TagClose {
     var node = {};
-    node.tag = tagName.join('').trim();
+    tagName = tagName.join('').trim();
+    if (tagName !== closeTagName) { throw new g._Error('Mismatched Open & Close Tags', null, null, null, g._lineNumber(), g._columnNumber()); }
+    node.tag = tagName;
     if (attrs) {
       node.attributes = attrs;
     }
@@ -56,12 +59,18 @@ Tag
     }
     return node;
   }
+  / InvalidEmptyTag
+
+InvalidEmptyTag
+  = "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" __ content:TagContent {
+    throw new g._Error('Invalid Empty Tag', null, null, null, g._lineNumber(), g._columnNumber());
+  }
 
 DoctypeTag
   = "<!" &[^\-] DOCTYPER:[^>]+ ">" {return "<!" + DOCTYPER.join('') + ">";}
 
 TagClose "TagClose"
-  = "</" __ tagCloseName:[^ >]+ __ ">" {return tagCloseName.join('');}
+  = "</" __ tagCloseName:[^ >]+ __ ">" {return tagCloseName.join('').trim();}
 
 EmptyTag
   = "<" &[^/] __ tagName:[^ />]+ attrs:Attributes __ "/>" {

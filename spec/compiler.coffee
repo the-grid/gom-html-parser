@@ -6,7 +6,6 @@ else
 
 {expect, assert} = chai
 
-
 parse = (title, sources, expectation, pending) ->
   itFn = if pending then xit else it
 
@@ -29,24 +28,24 @@ parse = (title, sources, expectation, pending) ->
           expect(result).to.eql expectation
 
 
-# Helper function for expecting errors to be thrown when parsing.
-#
-# @param source [String] CCSS statements.
-# @param message [String] This should be provided when a rule exists to catch
-# invalid syntax, and omitted when an error is expected to be thrown by the PEG
-# parser.
-# @param pending [Boolean] Whether the spec should be treated as pending.
-#
-expectError = (source, message, pending) ->
+# Helper for expecting errors to be thrown when parsing.
+
+fails = (title, sources, message, pending) ->
   itFn = if pending then xit else it
 
-  describe source, ->
-    predicate = 'should throw an error'
-    predicate = "#{predicate} with message: #{message}" if message?
+  if !(sources instanceof Array)
+    sources = [sources]
 
-    itFn predicate, ->
-      exercise = -> parser.parse source
-      expect(exercise).to.throw Error, message
+  sources.forEach (source, i) ->
+
+    describe "#{title} - #{i + 1}", ->
+      predicate = 'should throw an error'
+      predicate = "#{predicate} with message: #{message}" if message?
+
+      itFn predicate, ->
+        exercise = -> parser.parse source
+        expect(exercise).to.throw Error, message
+
 
 
 describe 'HTML-to-JSON', ->
@@ -296,6 +295,44 @@ describe 'HTML-to-JSON', ->
             ]
           }
         ]
+
+
+  # Errors
+  # ====================================================================
+
+  describe "Helpful Errors", ->
+
+    fails "Invalid Empty Tag",
+      [
+        """
+        <div>
+        """,
+        """
+        <section>
+          <div>
+            <div></div>
+          </div>
+        """
+      ],
+      "Invalid Empty Tag"
+
+    fails "Mismatched Open & Close Tags",
+      [
+        """
+        <div></section>
+        """,
+        """
+        <section>
+          <div>
+            <div>
+          </div>
+        </section>
+        """,
+      ],
+
+      "Mismatched Open & Close Tags"
+
+
 
 
 

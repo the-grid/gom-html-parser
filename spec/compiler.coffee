@@ -120,7 +120,7 @@ describe 'HTML-to-JSON', ->
           """
           <
           div
-            class="
+            class ="
               foo
               bar
               pug

@@ -171,10 +171,10 @@ Attribute
   }
 
 AttributeValue
-  = '="' __ val:[^"]* __ '"' {return val.join('').trim();}
-  / "='" __ val:[^']* __ "'" {return val.join('').trim();}
-  / "=" "false" {return false;}
-  / "=" "true" {return true;}
+  = __ '="' __ val:[^"]* __ '"' {return val.join('').trim();}
+  / __ "='" __ val:[^']* __ "'" {return val.join('').trim();}
+  / __ "=" __ "false" {return false;}
+  / __ "=" __ "true" {return true;}
 
 
 SourceCharacter

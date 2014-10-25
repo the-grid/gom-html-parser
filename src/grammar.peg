@@ -46,6 +46,7 @@ Tag
   / "<" &[^/] __ tagName:[^ >]+ attrs:Attributes __ ">" __ content:TagContent closeTagName:TagClose {
     var node = {};
     tagName = tagName.join('').trim();
+
     if (tagName !== closeTagName) { throw new g._Error('Mismatched Open & Close Tags', null, null, null, g._lineNumber(), g._columnNumber()); }
     node.tag = tagName;
     if (attrs) {
@@ -69,6 +70,12 @@ InvalidEmptyTag
 
 DoctypeTag
   = "<!" &[^\-] DOCTYPER:[^>]+ ">" {return "<!" + DOCTYPER.join('') + ">";}
+
+CData
+  = "<![CDATA[" data:CDataSourceChar* "]]>" {return "<![CDATA[" + data.join('') + "]]>";}
+
+CDataSourceChar
+  = !"]]>" char:SourceCharacter {return char;}
 
 TagClose "TagClose"
   = "</" __ tagCloseName:[^ >]+ __ ">" {return tagCloseName.join('').trim();}
@@ -111,18 +118,22 @@ TagContent
     if (content.length === 0) {return null;}
     return content;
   }
-  / text:[^<]* {
-    text = text.join('');
+  / text:NotTagContent {
     if (text.length <= 0) {return null;}
     return text;
   }
 
 NotTagContent
-  = s:(Comment / [^<])*  {
+  = s:(CData / Comment / [^<])*  {
     var text = '';
     s.forEach(function(match){
       if (match) {
-        text += match[0];
+        if (typeof match === 'string') {
+          text += match;
+        }
+        else {
+          text += match[0];
+        }
       }
     })
     return text;

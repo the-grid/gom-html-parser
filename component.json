@@ -3,7 +3,7 @@
   "description": "Parsers HTML to GOM flavored JSON",
   "author": "Dan Tocchini <d4@thegrid.io>",
   "repo": "the-grid/gom-html-parser",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "json": [
     "component.json"
   ],

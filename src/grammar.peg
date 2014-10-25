@@ -1,5 +1,6 @@
 {
   var p = this;
+
   var g = (function() {
     var getLineNumber = function() {
       return line();
@@ -29,7 +30,7 @@ Document
   = Tags
 
 Tags
-  = __ pretext:NotTagContent tags:( Tag __ )* posttext:NotTagContent {
+  = __ pretext:NotTagContent tags:( Tag __ )* posttext:NotTagContent __ {
     var val = [];
     if (pretext.length > 0) {val.push(pretext);}
     tags.forEach(function(tag){
@@ -117,10 +118,12 @@ TagContent
   }
 
 NotTagContent
-  = s:(Comment* [^<])* __ {
+  = s:(Comment / [^<])*  {
     var text = '';
     s.forEach(function(match){
-      text += match[1];
+      if (match) {
+        text += match[0];
+      }
     })
     return text;
   }
@@ -180,10 +183,14 @@ SourceCharacter
 WhiteSpace "whitespace"
   = [\t\v\f \u00A0\uFEFF]
 
+EOL
+  = LineTerminator
+  / LineTerminatorSequence
+
 LineTerminator
   = [\n\r\u2028\u2029]
 
-LineTerminatorSequence "end of line"
+LineTerminatorSequence
   = "\n"
   / "\r\n"
   / "\r"
@@ -198,7 +205,7 @@ EOF
   = !.
 
 Comment "comment"
-  = MultiLineComment
+  = MultiLineComment {return null;}
 
 MultiLineComment
   = "<!--" (!"-->" SourceCharacter)* "-->"

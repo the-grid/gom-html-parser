@@ -13,20 +13,20 @@
     }
   ],
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-cafe-mocha": "~0.1.2",
-    "grunt-cli": "~0.1.13",
-    "chai": "~1.5.0",
-    "mocha": "~1.9.0",
-    "grunt-contrib-watch": "~0.3.1",
-    "grunt-peg": "~1.4.0",
-    "grunt-component-build": "~0.5.0",
-    "grunt-mocha-phantomjs": "~0.2.8",
-    "grunt-contrib-uglify": "~0.2.1",
-    "grunt-contrib-coffee": "~0.7.0"
+    "grunt": "0.4.5",
+    "grunt-cafe-mocha": "0.1.13",
+    "grunt-cli": "0.1.13",
+    "chai": "1.5.0",
+    "mocha": "1.9.0",
+    "grunt-contrib-watch": "0.3.1",
+    "grunt-peg": "1.4.0",
+    "grunt-component-build": "0.5.3",
+    "grunt-mocha-phantomjs": "0.2.8",
+    "grunt-contrib-uglify": "0.2.7",
+    "grunt-contrib-coffee": "0.7.0"
   },
   "dependencies": {
-    "error-reporter": "~0.1.0"
+    "error-reporter": "0.1.5"
   },
   "keywords": [],
   "scripts": {
